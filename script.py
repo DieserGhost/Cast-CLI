@@ -21,6 +21,14 @@ def start_stream(file_path, file_name, rtmp_url, stream_key):
     return process
 
 
+def stream_default_video(default_video, rtmp_url, stream_key):
+    while True:
+        print(f"Streaming Default Video: {default_video}")
+        stream_process = start_stream(default_video, default_video, rtmp_url, stream_key)
+        stream_process.wait()
+        time.sleep(5)
+
+
 if __name__ == '__main__':
     try:
         with open('settings-cast-cli.json', 'r') as f:
@@ -31,26 +39,25 @@ if __name__ == '__main__':
         stream_key = settings['stream_key']
         default_video = settings['default_video']
 
-        video_files = [f for f in os.listdir(video_dir) if f.endswith(('.mp4', '.mkv', '.avi', '.mov'))]
+        while True:
+            video_files = [f for f in os.listdir(video_dir) if f.endswith(('.mp4', '.mkv', '.avi', '.mov'))]
 
-        if not video_files:
-            print("Keine Videos im Verzeichnis gefunden. Spiele Standardvideo ab.")
-            video_files = [default_video]
+            if not video_files:
+                print("Keine Videos im Verzeichnis gefunden. Streame Standardvideo.")
+                stream_default_video(default_video, rtmp_url, stream_key)
+            else:
+                print("Starting Streaming...")
 
-        print("Starte Streaming...")
-
-        for video_file in video_files:
-            file_path = os.path.join(video_dir, video_file) if video_file != default_video else default_video
-            print(f"Streame Datei: {video_file}")
-            stream_process = start_stream(file_path, video_file, rtmp_url, stream_key)
-            stream_process.wait()
-            time.sleep(5)
+                for video_file in video_files:
+                    file_path = os.path.join(video_dir, video_file)
+                    print(f"Streame Datei: {video_file}")
+                    stream_process = start_stream(file_path, video_file, rtmp_url, stream_key)
+                    stream_process.wait()
+                    time.sleep(5)
 
     except KeyboardInterrupt:
-        print("Streaming unterbrochen.")
+        print("Streaming interrupted.")
     except Exception as e:
-        print(f"Fehler beim Streaming: {e}")
+        print(f"Error during streaming: {e}")
     finally:
-        if 'stream_process' in locals():
-            stream_process.terminate()
-        print("Streaming beendet.")
+        print("Streaming ended.")
