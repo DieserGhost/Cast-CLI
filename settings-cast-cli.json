@@ -1,0 +1,6 @@
+{
+    "video_dir": "videos",
+    "rtmp_url": "rtmp://a.rtmp.youtube.com/live2",
+    "stream_key": "mykey",
+    "default_video": "nothing-found.mp4"
+}

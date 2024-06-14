@@ -1,0 +1,1 @@
+screen -S 247StreamYT python3.11 script.py
